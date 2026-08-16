@@ -77,33 +77,24 @@ config KSU_MULTI_MANAGER_SUPPORT
 	help
 		Enable multi KernelSU manager support
 
-choice
-	prompt "KernelSU Hooking Method"
+menu "KernelSU Hooking Method"
 	depends on KSU
-	default KSU_TRACEPOINT_HOOK
-	help
-	  Select the hooking method for KernelSU.
-	  Note: Tracepoint Syscall Redirect hook is only supported for GKI2(5.10+)
 
-config KSU_TRACEPOINT_HOOK
-	bool "Tracepoint Syscall Redirect"
-	help
-	  The standard, upstream method for modern kernels. 
-	  Utilizes GKI tracepoints for syscall redirection. 
-	  The implementation is only for devices with GKI2 support.
-	  Support for kernel 5.10+
+comment "Select the hooking method for KernelSU."
+comment "Manual hook takes precedence over inline hook, inline over tracepoint."
 
 config KSU_MANUAL_HOOK
 	bool "Manually hook KernelSU"
 	depends on KSU != m
 	help
-	  If enabled, it hooks the required KernelSU syscalls 
+	  If enabled, it hooks the required KernelSU syscalls
 	  with a manually-patched function.
 	  Support for kernel 3.4+
 
 config KSU_INLINE_HOOK
 	bool "SUSFS Inline Hook"
 	depends on KSU != m && KSU_SUSFS
+	depends on !KSU_MANUAL_HOOK
 	help
 	  If enabled, it relies on the syscall hooks that simonpunk's SUSFS
 	  patch already inlines into the kernel, instead of hooking them
@@ -111,7 +102,19 @@ config KSU_INLINE_HOOK
 	  SUSFS hooks exactly as the upstream patch places them.
 	  Support for kernel 3.4+
 
-endchoice
+config KSU_TRACEPOINT_HOOK
+	bool "Tracepoint Syscall Redirect"
+	depends on !KSU_MANUAL_HOOK && !KSU_INLINE_HOOK
+	default y
+	help
+	  The standard, upstream method for modern kernels.
+	  Utilizes GKI tracepoints for syscall redirection.
+	  The implementation is only for devices with GKI2 support.
+	  Support for kernel 5.10+
+	  This is the default when neither the manual nor the SUSFS inline
+	  hook is enabled.
+
+endmenu
 
 menu "KernelSU - Manual Hook Auto hook"
     depends on KSU_MANUAL_HOOK
