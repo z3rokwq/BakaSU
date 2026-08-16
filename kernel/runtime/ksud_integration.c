@@ -104,7 +104,7 @@ static void stop_execve_hook(void);
         bool ret = schedule_work(&stop_input_hook_work);
         pr_info("unregister input kprobe: %d!\n", ret);
     }
-#elif defined(CONFIG_KSU_SUSFS)
+#elif defined(CONFIG_KSU_INLINE_HOOK)
     DEFINE_STATIC_KEY_TRUE(ksu_is_init_rc_hook_enabled);
     DEFINE_STATIC_KEY_TRUE(ksu_is_input_hook_enabled);
 
@@ -673,7 +673,7 @@ void ksu_handle_fstat64_ret(unsigned long *fd, struct stat64 __user **statbuf_pt
 
 #endif
 
-#ifdef CONFIG_KSU_SUSFS
+#ifdef CONFIG_KSU_INLINE_HOOK
 void ksu_handle_vfs_fstat(int fd, loff_t *kstat_size_ptr)
 {
     struct file *file = fget(fd);
@@ -695,7 +695,7 @@ void ksu_handle_vfs_fstat(int fd, loff_t *kstat_size_ptr)
     }
     fput(file);
 }
-#endif // #ifdef CONFIG_KSU_SUSFS
+#endif // #ifdef CONFIG_KSU_INLINE_HOOK
 
 void ksu_handle_initrc(struct file *file)
 {

@@ -111,16 +111,11 @@ static inline void __init ksu_hook_init(void)
 #if defined(CONFIG_KSU_TRACEPOINT_HOOK)
     ksu_syscall_hook_init();
     ksu_syscall_hook_manager_init();
-#elif defined(CONFIG_KSU_MANUAL_HOOK)
+#elif defined(CONFIG_KSU_MANUAL_HOOK) || defined(CONFIG_KSU_INLINE_HOOK)
 // only lsm hook need call init
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0)
     ksu_lsm_hook_built_in_init();
 #endif
-#elif defined(CONFIG_KSU_SUSFS)
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0)
-    ksu_lsm_hook_built_in_init();
-#endif
-    susfs_init();
 #else
 #error "Unsupported hook type"
 #endif
@@ -231,6 +226,10 @@ int __init kernelsu_init(void)
         pr_err("prepare cred failed!\n");
         return -ENOSYS;
     }
+
+#ifdef CONFIG_KSU_SUSFS
+    susfs_init();
+#endif
 
     pr_info("initializing symbol resolver\n");
     ksu_init_symbol_resolver();
