@@ -81,7 +81,7 @@ static inline void ksu_set_ksud_status(uid_t new_uid)
     }
 }
 
-#ifdef CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS) && defined(KSU_COMPAT_HAS_SUSFS_ZYGOTE_NEXT)
 extern struct work_struct susfs_extra_works;
 
 static int handle_zygote_next_setresuid(uid_t new_uid)
@@ -134,7 +134,7 @@ do_susfs_work: {
 
 int ksu_handle_setuid(uid_t new_uid, uid_t old_uid)
 {
-#ifdef CONFIG_KSU_SUSFS
+#if defined(CONFIG_KSU_SUSFS) && defined(KSU_COMPAT_HAS_SUSFS_ZYGOTE_NEXT)
     // Only susfs will process zygote_next
     // We don't care it in Tracepoint / Manual hook
 

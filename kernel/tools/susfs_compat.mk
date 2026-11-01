@@ -14,3 +14,9 @@ ifeq ($(shell grep -q "ksu_install_su_fd" $(srctree)/fs/exec.c; echo $$?),0)
 $(info -- $(REPO_NAME)/compat: ksu_install_su_fd direct call found)
 ccflags-y += -DKSU_COMPAT_HAS_SUSFS_INSTALL_SU_FD_DIRECT_CALL
 endif
+
+# zygote_next process marks only exist in newer susfs
+ifeq ($(shell grep -q "susfs_set_current_proc_umounted_for_zygote_next" $(srctree)/include/linux/susfs_def.h; echo $$?),0)
+$(info -- $(REPO_NAME)/susfs_feature_check: zygote_next process marks found)
+ccflags-y += -DKSU_COMPAT_HAS_SUSFS_ZYGOTE_NEXT
+endif
