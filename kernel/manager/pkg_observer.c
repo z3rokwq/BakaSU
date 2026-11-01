@@ -10,6 +10,9 @@
 #include <linux/version.h>
 #include "klog.h" // IWYU pragma: keep
 #include "manager/throne_tracker.h"
+#ifdef CONFIG_KSU_SUSFS
+#include <linux/susfs.h>
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 #define MASK_SYSTEM (FS_CREATE | FS_MOVE | FS_EVENT_ON_CHILD)
 
@@ -30,6 +33,9 @@ static void ksu_track_throne_tw_func(struct callback_head *cb)
     if (current->flags & PF_EXITING)
         return;
     track_throne(TRACK_THRONE_FORCE_SYNCHRONOUS);
+#ifdef CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER
+    susfs_parse_priority_app_strings();
+#endif // #ifdef CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER
 }
 
 // Never scan from the fsnotify handler: fsnotify_mark_srcu and the rename's dir
@@ -52,6 +58,9 @@ static void ksu_defer_track_throne(void)
     }
     pr_warn("defer track_throne failed, run it inline\n");
     track_throne(TRACK_THRONE_FORCE_SYNCHRONOUS);
+#ifdef CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER
+    susfs_parse_priority_app_strings();
+#endif // #ifdef CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER
 }
 
 static int ksu_handle_inode_event(struct fsnotify_mark *mark, u32 mask, struct inode *inode, struct inode *dir,
