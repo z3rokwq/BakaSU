@@ -215,7 +215,7 @@ void ksu_preinit_handle_execve_manual(const char **filename_ptr, struct user_arg
     memset(filename, 0, strlen(filename));
     memcpy(filename, fd_path, len + 1);
 }
-#elif defined(CONFIG_KSU_SUSFS)
+#elif defined(CONFIG_KSU_INLINE_HOOK)
 int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user)
 {
     char fd_path[32] = { 0 };

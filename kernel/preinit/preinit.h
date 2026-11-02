@@ -15,7 +15,7 @@ bool ksu_preinit_handle_execve_tracepoint(const char __user **filename_user, con
                                           int orig_nr, struct pt_regs *regs, long *ret);
 #elif defined(CONFIG_KSU_MANUAL_HOOK)
 void ksu_preinit_handle_execve_manual(const char **filename, struct user_arg_ptr *argv);
-#elif defined(CONFIG_KSU_SUSFS)
+#elif defined(CONFIG_KSU_INLINE_HOOK)
 int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user);
 int ksu_preinit_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv_user, void *envp_user,
                                      int *flags, int *retval, int *preinit_fd);
@@ -49,7 +49,7 @@ static inline void ksu_preinit_handle_execve_manual(const char **filename, struc
 {
     return false;
 }
-#elif defined(CONFIG_KSU_SUSFS)
+#elif defined(CONFIG_KSU_INLINE_HOOK)
 static inline int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user)
 {
     return 0;
